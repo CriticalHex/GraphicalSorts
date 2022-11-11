@@ -1,14 +1,16 @@
-from selectionsort import SelectionSort
+import sorts
 import pygame
 
 
 def main():
     screen = pygame.display.set_mode((1000, 1000))
-    sort = SelectionSort()
+    elements = 250
+    using = sorts.Bubble
+    sort = using(elements)
     clock = pygame.time.Clock()
     running = True
     while running:
-        clock.tick(60)
+        # clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -16,13 +18,13 @@ def main():
             if keys[pygame.K_LCTRL]:
                 running = False
             if keys[pygame.K_LSHIFT]:
-                sort = SelectionSort()
+                sort = using(elements)
             if keys[pygame.K_SPACE]:
                 pass
 
         screen.fill((0, 0, 0))
 
-        sort.update(screen)
+        sort.run(screen)
 
         pygame.display.flip()
 
