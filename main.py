@@ -4,9 +4,10 @@ import pygame
 
 def main():
     screen = pygame.display.set_mode((1000, 1000))
-    elements = 250
-    using = sorts.Bubble
-    sort = using(elements)
+    elements = 1000
+    seperators = False
+    using = sorts.Shell
+    sort = using(elements, seperators=seperators)
     clock = pygame.time.Clock()
     running = True
     while running:
@@ -18,13 +19,13 @@ def main():
             if keys[pygame.K_LCTRL]:
                 running = False
             if keys[pygame.K_LSHIFT]:
-                sort = using(elements)
+                sort = using(elements, seperators=seperators)
             if keys[pygame.K_SPACE]:
                 pass
 
         screen.fill((0, 0, 0))
 
-        sort.run(screen)
+        sort.run(screen, 100)
 
         pygame.display.flip()
 
