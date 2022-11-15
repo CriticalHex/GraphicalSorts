@@ -154,19 +154,21 @@ class Shell(Sort):
         self.gap = self.n // 2
         self.exterior()
         self.middle()
-        self.internal()
 
     def exterior(self):
         self.c1 += 1
+
         self.j = self.gap
 
     def middle(self):
         self.c2 += 1
+
         self.i = self.j - self.gap
         self.current_index = self.i
 
     def internal(self):
         self.c3 += 1
+
         self.second_index = self.i + self.gap
         if self.to_sort[self.second_index] > self.to_sort[self.current_index]:
             self.inc_mid()
@@ -185,18 +187,24 @@ class Shell(Sort):
         self.gap //= 2
 
     def step(self):
-        if self.gap > 0:
-            self.exterior()
-            if self.j < self.n:
-                self.middle()
-                if self.i >= 0:
-                    self.internal()
-                else:
-                    self.inc_mid()
+        if not self.done:
+            self.second_index = self.i + self.gap
+            if self.to_sort[self.second_index] > self.to_sort[self.current_index]:
+                self.j += 1
+                return
             else:
-                self.inc_ext()
-        else:
-            self.done = True
+                self.to_sort[self.current_index], self.to_sort[self.second_index] = (
+                    self.to_sort[self.second_index],
+                    self.to_sort[self.current_index],
+                )
+            if self.i < 0:
+                self.inc_mid()
+                self.middle()
+                if self.j >= self.n:
+                    self.inc_ext()
+                    self.exterior()
+                    if self.gap <= 0:
+                        self.done = True
 
     def run(self, screen, speed):
         print(self.c1, self.c2, self.c3)
