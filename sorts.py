@@ -147,65 +147,44 @@ class Merge(Sort):
 class Shell(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
-        self.c1 = 0
-        self.c2 = 0
-        self.c3 = 0
         self.n = len(self.to_sort)
         self.gap = self.n // 2
-        self.exterior()
-        self.middle()
-
-    def exterior(self):
-        self.c1 += 1
-
         self.j = self.gap
+        self.i = 0
 
-    def middle(self):
-        self.c2 += 1
-
-        self.i = self.j - self.gap
-        self.current_index = self.i
-
-    def internal(self):
-        self.c3 += 1
-
-        self.second_index = self.i + self.gap
-        if self.to_sort[self.second_index] > self.to_sort[self.current_index]:
-            self.inc_mid()
-            return
+    def interior(self):
+        if self.i >= 0:
+            self.second_index = self.i + self.gap
+            self.current_index = self.i
+            if self.to_sort[self.i + self.gap] > self.to_sort[self.i]:
+                self.inc_mid()
+                return
+            else:
+                self.to_sort[self.i], self.to_sort[self.i + self.gap] = (
+                    self.to_sort[self.i + self.gap],
+                    self.to_sort[self.i],
+                )
+            self.i -= self.gap
         else:
-            self.to_sort[self.current_index], self.to_sort[self.second_index] = (
-                self.to_sort[self.second_index],
-                self.to_sort[self.current_index],
-            )
-        self.i -= self.gap
+            self.inc_mid()
 
     def inc_mid(self):
         self.j += 1
+        if self.j < self.n:
+            self.i = self.j - self.gap
+        else:
+            self.inc_ext()
 
     def inc_ext(self):
         self.gap //= 2
+        if self.gap > 0:
+            self.j = self.gap
+            self.i = 0
 
     def step(self):
         if not self.done:
-            self.second_index = self.i + self.gap
-            if self.to_sort[self.second_index] > self.to_sort[self.current_index]:
-                self.j += 1
-                return
-            else:
-                self.to_sort[self.current_index], self.to_sort[self.second_index] = (
-                    self.to_sort[self.second_index],
-                    self.to_sort[self.current_index],
-                )
-            if self.i < 0:
-                self.inc_mid()
-                self.middle()
-                if self.j >= self.n:
-                    self.inc_ext()
-                    self.exterior()
-                    if self.gap <= 0:
-                        self.done = True
+            self.interior()
+            self.check()
 
     def run(self, screen, speed):
-        print(self.c1, self.c2, self.c3)
         self.process(screen, speed, self.step)

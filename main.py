@@ -8,10 +8,8 @@ def main():
     seperators = False
     using = sorts.Shell
     sort = using(elements, seperators=seperators)
-    clock = pygame.time.Clock()
     running = True
     while running:
-        # clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -25,7 +23,7 @@ def main():
 
         screen.fill((0, 0, 0))
 
-        sort.run(screen, 100)
+        sort.run(screen, 10)
 
         pygame.display.flip()
 
