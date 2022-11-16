@@ -5,6 +5,7 @@ from math import inf
 
 class Sort:
     def __init__(self, elements, *, seperators=True) -> None:
+        self.screen = pygame.display.get_surface()
         self.space = 1000 // elements
         self.to_sort: list[int] = [val for val in range(self.space, 1001, self.space)]
         self.sorted = self.to_sort.copy()
@@ -14,7 +15,13 @@ class Sort:
         self.done = False
         self.seperators = seperators
 
-    def draw(self, screen):
+    def swap(self):
+        self.to_sort[self.current_index], self.to_sort[self.second_index] = (
+            self.to_sort[self.second_index],
+            self.to_sort[self.current_index],
+        )
+
+    def draw(self):
         for i, val in enumerate(self.to_sort):
             rect = (
                 (i * self.space) + (1 * self.seperators),
@@ -24,21 +31,21 @@ class Sort:
             )
             if not self.done:
                 if i == self.current_index or i == self.second_index:
-                    pygame.draw.rect(screen, (255, 0, 0), rect)
+                    pygame.draw.rect(self.screen, (255, 0, 0), rect)
                 else:
-                    pygame.draw.rect(screen, (255, 255, 255), rect)
+                    pygame.draw.rect(self.screen, (255, 255, 255), rect)
             else:
-                pygame.draw.rect(screen, (0, 255, 0), rect)
+                pygame.draw.rect(self.screen, (0, 255, 0), rect)
 
     def check(self):
         if self.to_sort == self.sorted:
             self.done = True
 
-    def process(self, screen: pygame.Surface, speed: int, proc):
+    def process(self, speed: int, proc):
         if not self.done:
             for i in range(speed):
                 proc()
-        self.draw(screen)
+        self.draw()
 
 
 class Selection(Sort):
@@ -63,29 +70,19 @@ class Selection(Sort):
             self.current_index = self.second_index
             self.smallest = inf
 
-    def swap(self):
-        temp = self.to_sort[self.second_index]
-        self.to_sort[self.second_index] = self.smallest
-        self.to_sort[self.smallest_index] = temp
-
-    def run(self, screen, speed):
-        self.process(screen, speed, self.step)
+    def run(self, speed):
+        self.process(speed, self.step)
 
 
 class Bozo(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
 
-    def pick_random(self):
+    def pick_random_indexes(self):
         return randint(0, len(self.to_sort) - 1), randint(0, len(self.to_sort) - 1)
 
     def select_indexes(self):
-        self.current_index, self.second_index = self.pick_random()
-
-    def swap(self):
-        temp = self.to_sort[self.current_index]
-        self.to_sort[self.current_index] = self.to_sort[self.second_index]
-        self.to_sort[self.second_index] = temp
+        self.current_index, self.second_index = self.pick_random_indexes()
 
     def step(self):
         self.check()
@@ -93,8 +90,8 @@ class Bozo(Sort):
             self.select_indexes()
             self.swap()
 
-    def run(self, screen, speed):
-        self.process(screen, speed, self.step)
+    def run(self, speed):
+        self.process(speed, self.step)
 
 
 class Bogo(Sort):
@@ -109,8 +106,8 @@ class Bogo(Sort):
             self.swap()
             self.check()
 
-    def run(self, screen, speed):
-        self.process(screen, speed, self.step)
+    def run(self, speed):
+        self.process(speed, self.step)
 
 
 class Bubble(Sort):
@@ -120,9 +117,7 @@ class Bubble(Sort):
 
     def step(self):
         if self.to_sort[self.current_index] > self.to_sort[self.second_index]:
-            temp = self.to_sort[self.current_index]
-            self.to_sort[self.current_index] = self.to_sort[self.second_index]
-            self.to_sort[self.second_index] = temp
+            self.swap()
         self.increment()
 
     def increment(self):
@@ -135,8 +130,8 @@ class Bubble(Sort):
             self.step()
             self.check()
 
-    def run(self, screen, speed):
-        self.process(screen, speed, self.proc)
+    def run(self, speed):
+        self.process(speed, self.proc)
 
 
 class Merge(Sort):
@@ -160,10 +155,7 @@ class Shell(Sort):
                 self.inc_mid()
                 return
             else:
-                self.to_sort[self.i], self.to_sort[self.i + self.gap] = (
-                    self.to_sort[self.i + self.gap],
-                    self.to_sort[self.i],
-                )
+                self.swap()
             self.i -= self.gap
         else:
             self.inc_mid()
@@ -186,5 +178,88 @@ class Shell(Sort):
             self.interior()
             self.check()
 
-    def run(self, screen, speed):
-        self.process(screen, speed, self.step)
+    def run(self, speed):
+        self.process(speed, self.step)
+
+
+class Insertion(Sort):
+    def __init__(self, elements, *, seperators=True) -> None:
+        super().__init__(elements, seperators=seperators)
+        self.second_index = 1
+
+    def step(self):
+        if not self.done:
+            if self.to_sort[self.current_index] > self.to_sort[self.second_index]:
+                self.swap()
+                self.decrement()
+            else:
+                self.increment()
+            self.check()
+
+    def decrement(self):
+        if self.current_index > 0:
+            self.current_index -= 1
+        self.current_index %= len(self.to_sort) - 1
+        self.second_index = self.current_index + 1
+
+    def increment(self):
+        self.current_index += 1
+        self.current_index %= len(self.to_sort) - 1
+        self.second_index = self.current_index + 1
+
+    def run(self, speed):
+        self.process(speed, self.step)
+
+class Quick(Sort):
+    def __init__(self, elements, *, seperators=True) -> None:
+        super().__init__(elements, seperators=seperators)
+        self.low = 0
+        self.high = len(self.to_sort) - 1
+        
+        
+    # def partition(self):
+    #     self.pivot = self.to_sort[self.high]
+        
+    #     self.i = self.low - 1
+        
+    #     for self.j in range(self.low, self.high - 1):
+    #         if self.to_sort[self.j] < self.pivot:
+    #             self.i += 1
+    #             self.current_index = self.i
+    #             self.second_index = self.j
+    #             self.swap()
+    #     self.current_index = self.i + 1
+    #     self.second_index = self.high
+    #     self.swap()
+    #     return self.i + 1
+    
+    # def quicksort(self):
+    #     if self.low < self.high:
+    #         self.pi = self.partition()
+    #         self.high = self.pi - 1
+    #         self.quicksort()
+    
+    def partition(self, low, high):
+        pivot = self.to_sort[high]
+        
+        i = low - 1
+        
+        for j in range(low, high):
+            if self.to_sort[j] <= pivot:
+                i += 1
+                self.current_index = i
+                self.second_index = j
+                self.swap()
+        self.current_index = i + 1
+        self.second_index = high
+        self.swap()
+        return i + 1
+    
+    def quicksort(self, low, high):
+        if low < high:
+            pi = self.partition(low, high)
+            self.quicksort(low, pi - 1)
+            self.quicksort(pi + 1, high)
+            
+    
+            
