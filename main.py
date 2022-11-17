@@ -15,13 +15,12 @@ def click(mouse: vec, buttons: list[Button]):
 
 def main():
 
-    screen = pygame.display.set_mode((1000, 1000))
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
-    elements = 1000
+    elements = screen.get_width()
     seperators = False
 
-    using = sorts.Shell
-    sort = using(elements, seperators=seperators)
+    sort: sorts.Sort
 
     menu = True
     sorting = False
@@ -29,19 +28,31 @@ def main():
 
     menu_buttons: list[Button] = []
     menu_buttons.append(
-        Button(rec(1, 1, 50, 20), (255, 0, 0), "Selection", lambda: sorts.Selection)
+        Button(rec(1, 1, 198, 50), (255, 0, 0), "Selection", lambda: sorts.Selection)
     )
     menu_buttons.append(
-        Button(rec(51, 1, 50, 20), (255, 0, 0), "Bozo", lambda: sorts.Bozo)
+        Button(rec(201, 1, 198, 50), (255, 0, 0), "Bozo", lambda: sorts.Bozo)
     )
     menu_buttons.append(
-        Button(rec(101, 1, 50, 20), (255, 0, 0), "Bogo", lambda: sorts.Bogo)
+        Button(rec(401, 1, 198, 50), (255, 0, 0), "Bogo", lambda: sorts.Bogo)
     )
     menu_buttons.append(
-        Button(rec(151, 1, 50, 20), (255, 0, 0), "Bubble", lambda: sorts.Bubble)
+        Button(rec(601, 1, 198, 50), (255, 0, 0), "Bubble", lambda: sorts.Bubble)
     )
     menu_buttons.append(
-        Button(rec(201, 1, 50, 20), (255, 0, 0), "Shell", lambda: sorts.Shell)
+        Button(rec(801, 1, 198, 50), (255, 0, 0), "Shell", lambda: sorts.Shell)
+    )
+    menu_buttons.append(
+        Button(rec(1, 52, 198, 50), (255, 0, 0), "Comb", lambda: sorts.Comb)
+    )
+    menu_buttons.append(
+        Button(rec(201, 52, 198, 50), (255, 0, 0), "Insertion", lambda: sorts.Insertion)
+    )
+    menu_buttons.append(
+        Button(rec(401, 52, 198, 50), (255, 0, 0), "Cycle", lambda: sorts.Cycle)
+    )
+    menu_buttons.append(
+        Button(rec(601, 52, 198, 50), (255, 0, 0), "Cocktail", lambda: sorts.Cocktail)
     )
 
     while running:
@@ -56,6 +67,7 @@ def main():
                         sort = using(elements, seperators=seperators)
                         menu = False
                         sorting = True
+                        break
 
                 if event.type == pygame.QUIT:
                     running = False
@@ -95,12 +107,17 @@ def main():
                 if keys[pygame.K_LSHIFT]:
                     sort = using(elements, seperators=seperators)
 
+                if keys[pygame.K_ESCAPE]:
+                    sorting = False
+                    menu = True
+                    break
+
                 if keys[pygame.K_SPACE]:
                     pass
 
             screen.fill((0, 0, 0))
 
-            sort.run(100)
+            sort.run(1000)
 
             pygame.display.flip()
 
