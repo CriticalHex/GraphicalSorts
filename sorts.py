@@ -16,6 +16,7 @@ class Sort:
         self.current_index = 0
         self.second_index = 0
         self.done = False
+        self.n = len(self.to_sort)
         self.seperators = seperators
 
     def swap(self):
@@ -55,6 +56,10 @@ class Sort:
                 proc()
         self.draw()
 
+    def run(self):
+        """OVERLOAD THIS"""
+        pass
+
 
 class Selection(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
@@ -76,11 +81,11 @@ class Selection(Sort):
 
     def increment(self):
         self.current_index += 1
-        if self.current_index % len(self.to_sort) == 0:
+        if self.current_index % self.n == 0:
             self.check()
             self.swap()
             self.second_index += 1
-            self.second_index %= len(self.to_sort)
+            self.second_index %= self.n
             self.current_index = self.second_index
             self.smallest = inf
 
@@ -93,7 +98,7 @@ class Bozo(Sort):
         super().__init__(elements, seperators=seperators)
 
     def pick_random_indexes(self):
-        return randint(0, len(self.to_sort) - 1), randint(0, len(self.to_sort) - 1)
+        return randint(0, self.n - 1), randint(0, self.n - 1)
 
     def select_indexes(self):
         self.current_index, self.second_index = self.pick_random_indexes()
@@ -136,7 +141,7 @@ class Bubble(Sort):
 
     def increment(self):
         self.current_index += 1
-        self.current_index %= len(self.to_sort) - 1
+        self.current_index %= self.n - 1
         self.second_index = self.current_index + 1
 
     def proc(self):
@@ -151,7 +156,7 @@ class Bubble(Sort):
 class Shell(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
-        self.n = len(self.to_sort)
+        self.n = self.n
         self.gap = self.n // 2
         self.j = self.gap
         self.i = 0
@@ -208,12 +213,12 @@ class Insertion(Sort):
     def decrement(self):
         if self.current_index > 0:
             self.current_index -= 1
-        self.current_index %= len(self.to_sort) - 1
+        self.current_index %= self.n - 1
         self.second_index = self.current_index + 1
 
     def increment(self):
         self.current_index += 1
-        self.current_index %= len(self.to_sort) - 1
+        self.current_index %= self.n - 1
         self.second_index = self.current_index + 1
 
     def run(self, speed):
@@ -223,7 +228,7 @@ class Insertion(Sort):
 class Comb(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
-        self.n = len(self.to_sort)
+        self.n = self.n
         self.gap = self.n
         self.swapped = True
 
@@ -262,7 +267,7 @@ class Cycle(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
         self.switch = 0
-        self.n = len(self.to_sort)
+        self.n = self.n
         self.cycle_start = 0
 
     def swap(self):
@@ -338,7 +343,7 @@ class Cycle(Sort):
 class Cocktail(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
-        self.second_index = 1
+        self.second_index = self.current_index + 1
         self.reversing = False
 
     def step(self):
@@ -347,15 +352,14 @@ class Cocktail(Sort):
         self.increment()
 
     def increment(self):
-        if not self.reversing:
-            self.current_index += 1
-            self.current_index %= len(self.to_sort) - 1
-            if self.current_index == 0:
-                self.reversing = True
-        else:
+        if self.reversing:
             self.current_index -= 1
             if self.current_index == 0:
                 self.reversing = False
+        else:
+            self.current_index += 1
+            if self.current_index == (self.n - 2):
+                self.reversing = True
         self.second_index = self.current_index + 1
 
     def proc(self):
@@ -367,57 +371,156 @@ class Cocktail(Sort):
         self.process(speed, self.proc)
 
 
-class Quick(Sort):
+class Gnome(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
-        self.low = 0
-        self.high = len(self.to_sort) - 1
 
-    # def partition(self):
-    #     self.pivot = self.to_sort[self.high]
-
-    #     self.i = self.low - 1
-
-    #     for self.j in range(self.low, self.high - 1):
-    #         if self.to_sort[self.j] < self.pivot:
-    #             self.i += 1
-    #             self.current_index = self.i
-    #             self.second_index = self.j
-    #             self.swap()
-    #     self.current_index = self.i + 1
-    #     self.second_index = self.high
-    #     self.swap()
-    #     return self.i + 1
-
-    # def quicksort(self):
-    #     if self.low < self.high:
-    #         self.pi = self.partition()
-    #         self.high = self.pi - 1
-    #         self.quicksort()
-
-    def partition(self, low, high):
-        pivot = self.to_sort[high]
-
-        i = low - 1
-
-        for j in range(low, high):
-            if self.to_sort[j] <= pivot:
-                i += 1
-                self.current_index = i
-                self.second_index = j
+    def inc(self):
+        if self.second_index < self.n:
+            if self.second_index == 0:
+                self.second_index += 1
+            self.current_index = self.second_index - 1
+            if self.to_sort[self.second_index] >= self.to_sort[self.current_index]:
+                self.second_index += 1
+            else:
                 self.swap()
-        self.current_index = i + 1
-        self.second_index = high
-        self.swap()
-        return i + 1
+                self.second_index -= 1
 
-    def quicksort(self, low, high):
-        if low < high:
-            pi = self.partition(low, high)
-            self.quicksort(low, pi - 1)
-            self.quicksort(pi + 1, high)
+    def step(self):
+        if not self.done:
+            self.inc()
+            self.check()
+
+    def run(self, speed):
+        self.process(speed, self.step)
 
 
-class Merge(Sort):
+class Tim(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
+        self.min_merge = self.n // 8
+        self.switch = 0
+        self.min = self.calc_min()
+
+        self.start = 0
+
+    def calc_min(self):
+        n = self.n
+        r = 0
+        while n >= self.min_merge:
+            r |= n & 1
+            n >>= 1
+        return n + r
+
+    def full(self):
+        match self.switch:
+            case 0:
+                # from 0 to n step by min
+                if self.start < self.n:  # loop conditional
+                    self.end = min(self.start + self.min - 1, self.n - 1)
+                    self.i = self.start + 1  # start of insertion sort
+                    self.switch = 2  # to insertion sort loop
+                else:
+                    self.size = self.min  # initialize external while
+                    self.switch = 4
+            case 1:
+                self.start += self.min
+                self.switch = 0
+            case 2:
+                # from start + 1 to end + 1
+                if self.i < self.end + 1:  # loop conditional
+                    self.j = self.i
+                    self.switch = 3  # internal while
+                else:  # loop ends
+                    self.switch = 1  # increment for
+            case 3:
+                self.current_index = self.j  # for drawing
+                self.second_index = self.j - 1
+                if (
+                    self.j > self.start
+                    and self.to_sort[self.j] < self.to_sort[self.j - 1]
+                ):  # loop conditional
+                    self.swap()
+                    self.j -= 1
+                else:  # loop ends
+                    self.i += 1  # iterate insertion for
+                    self.switch = 2  # back to insertion for
+            case 4:
+                # external while
+                if self.size < self.n:  # loop conditional
+                    self.left = 0  # initialize internal for
+                    self.switch = 6  # to internal for
+            case 5:
+                self.size *= 2  # iterate external while
+                self.switch = 4  # to external while
+            case 6:
+                # from 0 to n step by 2size
+                if self.left < self.n:
+                    self.mid = min(self.n - 1, self.left + self.size - 1)
+                    self.right = min(self.left + 2 * self.size - 1, self.n - 1)
+                    if self.mid < self.right:
+                        self.switch = 8  # to merge
+                    else:
+                        self.switch = 7
+                else:
+                    self.switch = 5  # iterate external while
+            case 7:
+                self.left += self.size * 2  # iterate internal for
+                self.switch = 6  # to internal for
+            case 8:
+                # merge
+                self.len1, self.len2 = self.mid - self.left + 1, self.right - self.mid
+                self.left_array, self.right_array = [], []
+                self.i = 0  # initialize for loop
+                self.switch = 9
+            case 9:
+                if self.i < self.len1:
+                    self.left_array.append(self.to_sort[self.left + self.i])
+                    self.i += 1
+                else:
+                    self.i = 0
+                    self.switch = 10
+            case 10:
+                if self.i < self.len2:
+                    self.right_array.append(self.to_sort[self.mid + self.i + 1])
+                    self.i += 1
+                else:
+                    self.i, self.j, self.k = 0, 0, self.left  # initialize merge while
+                    self.switch = 11
+            case 11:
+                if self.i < self.len1 and self.j < self.len2:
+                    if self.left_array[self.i] <= self.right_array[self.j]:
+                        self.to_sort[self.k] = self.left_array[self.i]
+                        self.i += 1
+                    else:
+                        self.to_sort[self.k] = self.right_array[self.j]
+                        self.j += 1
+                    self.k += 1
+                else:
+                    self.switch = 12
+            case 12:
+                if self.i < self.len1:
+                    self.to_sort[self.k] = self.left_array[self.i]
+                    self.k += 1
+                    self.i += 1
+                else:
+                    self.switch = 13
+            case 13:
+                if self.j < self.len2:
+                    self.to_sort[self.k] = self.right_array[self.j]
+                    self.k += 1
+                    self.j += 1
+                else:
+                    self.switch = 7  # iterate internal for
+
+        if self.switch > 10:
+            self.current_index = self.i
+            self.second_index = self.j
+
+    def step(self):
+        if not self.done:
+            self.full()
+            self.check()
+
+    def run(self, speed):
+        self.process(speed, self.step)

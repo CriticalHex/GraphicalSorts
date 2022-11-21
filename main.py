@@ -14,17 +14,16 @@ def click(mouse: vec, buttons: list[Button]):
 
 
 def main():
+    sort: sorts.Sort
 
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
     elements = screen.get_width()
     seperators = False
-
-    sort: sorts.Sort
-
     menu = True
     sorting = False
     running = True
+    speed = 100
 
     menu_buttons: list[Button] = []
     menu_buttons.append(
@@ -53,6 +52,12 @@ def main():
     )
     menu_buttons.append(
         Button(rec(601, 52, 198, 50), (255, 0, 0), "Cocktail", lambda: sorts.Cocktail)
+    )
+    menu_buttons.append(
+        Button(rec(801, 52, 198, 50), (255, 0, 0), "Gnome", lambda: sorts.Gnome)
+    )
+    menu_buttons.append(
+        Button(rec(1, 103, 198, 50), (255, 0, 0), "Tim", lambda: sorts.Tim)
     )
 
     while running:
@@ -117,7 +122,7 @@ def main():
 
             screen.fill((0, 0, 0))
 
-            sort.run(1000)
+            sort.run(speed)
 
             pygame.display.flip()
 
