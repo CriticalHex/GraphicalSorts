@@ -25,48 +25,51 @@ def main():
     running = True
     speed = 100
 
+    button_color = (255,0,0)
     menu_buttons: list[Button] = []
     menu_buttons.append(
-        Button(rec(1, 1, 198, 50), (255, 0, 0), "Selection", lambda: sorts.Selection)
+        Button(rec(1, 1, 198, 50), button_color, "Selection", lambda: sorts.Selection)
     )
     menu_buttons.append(
-        Button(rec(201, 1, 198, 50), (255, 0, 0), "Bozo", lambda: sorts.Bozo)
+        Button(rec(201, 1, 198, 50), button_color, "Bozo", lambda: sorts.Bozo)
     )
     menu_buttons.append(
-        Button(rec(401, 1, 198, 50), (255, 0, 0), "Bogo", lambda: sorts.Bogo)
+        Button(rec(401, 1, 198, 50), button_color, "Bogo", lambda: sorts.Bogo)
     )
     menu_buttons.append(
-        Button(rec(601, 1, 198, 50), (255, 0, 0), "Bubble", lambda: sorts.Bubble)
+        Button(rec(601, 1, 198, 50), button_color, "Bubble", lambda: sorts.Bubble)
     )
     menu_buttons.append(
-        Button(rec(801, 1, 198, 50), (255, 0, 0), "Shell", lambda: sorts.Shell)
+        Button(rec(801, 1, 198, 50), button_color, "Shell", lambda: sorts.Shell)
     )
     menu_buttons.append(
-        Button(rec(1, 52, 198, 50), (255, 0, 0), "Comb", lambda: sorts.Comb)
+        Button(rec(1, 52, 198, 50), button_color, "Comb", lambda: sorts.Comb)
     )
     menu_buttons.append(
-        Button(rec(201, 52, 198, 50), (255, 0, 0), "Insertion", lambda: sorts.Insertion)
+        Button(rec(201, 52, 198, 50), button_color, "Insertion", lambda: sorts.Insertion)
     )
     menu_buttons.append(
-        Button(rec(401, 52, 198, 50), (255, 0, 0), "Cycle", lambda: sorts.Cycle)
+        Button(rec(401, 52, 198, 50), button_color, "Cycle", lambda: sorts.Cycle)
     )
     menu_buttons.append(
-        Button(rec(601, 52, 198, 50), (255, 0, 0), "Cocktail", lambda: sorts.Cocktail)
+        Button(rec(601, 52, 198, 50), button_color, "Cocktail", lambda: sorts.Cocktail)
     )
     menu_buttons.append(
-        Button(rec(801, 52, 198, 50), (255, 0, 0), "Gnome", lambda: sorts.Gnome)
+        Button(rec(801, 52, 198, 50), button_color, "Gnome", lambda: sorts.Gnome)
     )
     menu_buttons.append(
-        Button(rec(1, 103, 198, 50), (255, 0, 0), "Tim", lambda: sorts.Tim)
+        Button(rec(1, 103, 198, 50), button_color, "Tim", lambda: sorts.Tim)
     )
     menu_buttons.append(
-        Button(rec(201, 103, 198, 50), (255, 0, 0), "Radix", lambda: sorts.Radix)
+        Button(rec(201, 103, 198, 50), button_color, "Radix", lambda: sorts.Radix)
     )
     menu_buttons.append(
-        Button(rec(401, 103, 198, 50), (255, 0, 0), "Pancake", lambda: sorts.Pancake)
+        Button(rec(401, 103, 198, 50), button_color, "Pancake", lambda: sorts.Pancake)
     )
     menu_buttons.append(
-        Button(rec(601, 103, 198, 50), (255, 0, 0), "PigeonHole", lambda: sorts.PigeonHole)
+        Button(
+            rec(601, 103, 198, 50), button_color, "PigeonHole", lambda: sorts.PigeonHole
+        )
     )
 
     while running:
