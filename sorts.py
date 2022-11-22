@@ -546,7 +546,7 @@ class Radix(Sort):
                 self.exp *= 10
                 self.switch = 0
             case 2:
-                #counting sort
+                # counting sort
                 self.output = [0] * self.n
                 self.count = [0] * 10
                 self.i = 0
@@ -622,12 +622,10 @@ class Pancake(Sort):
 
     def findMax(self):
         mi = 0
-        for i in range(0,self.current_size):
+        for i in range(0, self.current_size):
             if self.to_sort[i] > self.to_sort[mi]:
                 mi = i
         return mi
-
-
 
     def full(self):
         match self.switch:
@@ -638,7 +636,7 @@ class Pancake(Sort):
             case 1:
                 self.current_size -= 1
                 self.switch = 0
-            case 2:    
+            case 2:
                 if self.i != self.current_size - 1:
                     self.reversing = True
                     self.switch = 3
@@ -652,6 +650,51 @@ class Pancake(Sort):
     def step(self):
         if not self.done:
             self.work()
+            self.check()
+
+    def run(self, speed):
+        self.process(speed, self.step)
+
+
+class PigeonHole(Sort):
+    def __init__(self, elements, *, seperators=True) -> None:
+        super().__init__(elements, seperators=seperators)
+        self.min = min(self.to_sort)
+        self.max = max(self.to_sort)
+        self.size = self.max - self.min + 1
+        self.holes = [0] * self.size
+        self.switch = 0
+        self.i = 0
+
+    def full(self):
+        self.current_index = self.i
+        match self.switch:
+            case 0:
+                if self.i < self.n:
+                    self.holes[self.to_sort[self.i] - self.min] += 1
+                    self.i += 1
+                else:
+                    self.i = 0
+                    self.count = 0
+                    self.switch = 1
+                
+            case 1:
+                if self.count < self.size:
+                    self.switch = 3
+            case 2:
+                self.count += 1
+                self.switch = 1
+            case 3:
+                if self.holes[self.count] > 0:
+                    self.holes[self.count] -= 1
+                    self.to_sort[self.i] = self.count + self.min
+                    self.i += 1
+                else:
+                    self.switch = 2
+
+    def step(self):
+        if not self.done:
+            self.full()
             self.check()
 
     def run(self, speed):
