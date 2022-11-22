@@ -398,7 +398,7 @@ class Gnome(Sort):
 class Tim(Sort):
     def __init__(self, elements, *, seperators=True) -> None:
         super().__init__(elements, seperators=seperators)
-        self.min_merge = self.n // 8
+        self.min_merge = self.n // 32
         self.switch = 0
         self.min = self.calc_min()
 
@@ -520,6 +520,138 @@ class Tim(Sort):
     def step(self):
         if not self.done:
             self.full()
+            self.check()
+
+    def run(self, speed):
+        self.process(speed, self.step)
+
+
+class Radix(Sort):
+    def __init__(self, elements, *, seperators=True) -> None:
+        super().__init__(elements, seperators=seperators)
+        self.switch = 0
+        self.max = max(self.to_sort)
+        self.exp = 1
+        self.i = 0
+        self.index = 0
+
+    def full(self):
+        self.current_index = self.i
+        self.second_index = self.index
+        match self.switch:
+            case 0:
+                if self.max / self.exp >= 1:
+                    self.switch = 2
+            case 1:
+                self.exp *= 10
+                self.switch = 0
+            case 2:
+                #counting sort
+                self.output = [0] * self.n
+                self.count = [0] * 10
+                self.i = 0
+                self.switch = 3
+            case 3:
+                if self.i < self.n:
+                    self.index = self.to_sort[self.i] // self.exp
+                    self.count[self.index % 10] += 1
+                    self.i += 1
+                else:
+                    self.i = 1
+                    self.switch = 4
+            case 4:
+                if self.i < 10:
+                    self.count[self.i] += self.count[self.i - 1]
+                    self.i += 1
+                else:
+                    self.i = self.n - 1
+                    self.switch = 5
+            case 5:
+                if self.i >= 0:
+                    self.index = self.to_sort[self.i] // self.exp
+                    self.output[self.count[self.index % 10] - 1] = self.to_sort[self.i]
+                    self.count[self.index % 10] -= 1
+                    self.i -= 1
+                else:
+                    self.i = 0
+                    self.switch = 6
+            case 6:
+                if self.i < self.n:
+                    self.to_sort[self.i] = self.output[self.i]
+                    self.i += 1
+                else:
+                    self.switch = 1
+
+    def step(self):
+        if not self.done:
+            self.full()
+            self.check()
+
+    def run(self, speed):
+        self.process(speed, self.step)
+
+
+class Pancake(Sort):
+    def __init__(self, elements, *, seperators=True) -> None:
+        super().__init__(elements, seperators=seperators)
+        self.switch = 0
+        self.reversing = False
+        self.reverse_init = True
+        self.current_size = self.n
+
+    def work(self):
+        if self.reversing:
+            self.reverse()
+        else:
+            self.full()
+
+    def reverse(self):
+        if self.reverse_init == True:
+            self.start = 0
+            self.reverse_init = False
+        else:
+            self.current_index = self.start
+            self.second_index = self.i
+            if self.start < self.i:
+                self.swap()
+                self.start += 1
+                self.i -= 1
+            else:
+                self.reverse_init = True
+                self.reversing = False
+
+    def findMax(self):
+        mi = 0
+        for i in range(0,self.current_size):
+            if self.to_sort[i] > self.to_sort[mi]:
+                mi = i
+        return mi
+
+
+
+    def full(self):
+        match self.switch:
+            case 0:
+                if self.current_size > 1:
+                    self.i = self.findMax()
+                    self.switch = 2
+            case 1:
+                self.current_size -= 1
+                self.switch = 0
+            case 2:    
+                if self.i != self.current_size - 1:
+                    self.reversing = True
+                    self.switch = 3
+                else:
+                    self.switch = 1
+            case 3:
+                self.i = self.current_size - 1
+                self.reversing = True
+                self.switch = 1
+
+    def step(self):
+        if not self.done:
+            self.work()
             self.check()
 
     def run(self, speed):

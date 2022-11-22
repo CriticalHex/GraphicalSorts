@@ -23,7 +23,7 @@ def main():
     menu = True
     sorting = False
     running = True
-    speed = 100
+    speed = 10000
 
     menu_buttons: list[Button] = []
     menu_buttons.append(
@@ -58,6 +58,12 @@ def main():
     )
     menu_buttons.append(
         Button(rec(1, 103, 198, 50), (255, 0, 0), "Tim", lambda: sorts.Tim)
+    )
+    menu_buttons.append(
+        Button(rec(201, 103, 198, 50), (255, 0, 0), "Radix", lambda: sorts.Radix)
+    )
+    menu_buttons.append(
+        Button(rec(401, 103, 198, 50), (255, 0, 0), "Pancake", lambda: sorts.Pancake)
     )
 
     while running:
